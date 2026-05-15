@@ -2,6 +2,8 @@
 
 A modern full-stack Team Task Manager built for company selection assignment.
 
+**Repository:** [github.com/Aminkhan78/Task-Manager](https://github.com/Aminkhan78/Task-Manager)
+
 ## Stack
 
 - Backend: Java 17, Spring Boot, Spring Security (JWT), Spring Data MongoDB
@@ -18,39 +20,113 @@ A modern full-stack Team Task Manager built for company selection assignment.
 - Dashboard: total tasks, todo, in progress, done, overdue
 - Modern UI: glassmorphism style with background image
 
-## Local Setup
+## Run locally (manual)
 
-### 1) MongoDB
+### Prerequisites
 
-Run MongoDB locally (default connection: `mongodb://localhost:27017/teamtaskmanager`):
+- Java 17+ and Maven
+- Node.js 18+
+- MongoDB running locally (Windows service or Docker)
 
-```bash
-docker run -d --name ttm-mongo -p 27017:27017 mongo:7
+Default database URL: `mongodb://localhost:27017/teamtaskmanager`
+
+### Option A — One script (Windows)
+
+```powershell
+cd scripts
+.\start-local.ps1
 ```
 
-### 2) Backend
+This opens two terminals (backend + frontend). Open **http://localhost:5173**.
 
-```bash
+### Option B — Two terminals
+
+**Terminal 1 — Backend**
+
+```powershell
 cd backend
 mvn spring-boot:run
 ```
 
-Set env vars (optional if using defaults):
+Wait until you see `Started TeamTaskManagerApplication`.
 
-- `SPRING_DATA_MONGODB_URI`
-- `APP_JWT_SECRET` (must be a long secure key in production)
-- `APP_JWT_EXPIRATION_MS`
+**Terminal 2 — Frontend**
 
-### 3) Frontend
-
-```bash
+```powershell
 cd frontend
-cp .env.example .env
+copy .env.example .env
 npm install
 npm run dev
 ```
 
-Frontend runs on `http://localhost:5173`, backend on `http://localhost:8080`.
+Open **http://localhost:5173**. Backend API: **http://localhost:8080** (health: `/api/health`).
+
+### Optional environment variables
+
+| Variable | Default |
+|----------|---------|
+| `SPRING_DATA_MONGODB_URI` | `mongodb://localhost:27017/teamtaskmanager` |
+| `APP_JWT_SECRET` | (dev default in `application.properties`) |
+| `APP_JWT_EXPIRATION_MS` | `86400000` |
+| `VITE_API_URL` | `http://localhost:8080` (in `frontend/.env`) |
+
+### First use
+
+1. Sign up at http://localhost:5173
+2. Choose **Admin** to create projects and tasks
+3. User/project IDs are MongoDB strings (not numbers)
+
+---
+
+## Push to GitHub
+
+One-time login (if not already):
+
+```powershell
+gh auth login
+```
+
+Push latest code:
+
+```powershell
+cd a:\MinorProject\Team-task-manager
+git push origin main
+```
+
+---
+
+## Deploy free (Render + MongoDB Atlas)
+
+### 1) MongoDB Atlas (free)
+
+1. Create account at [mongodb.com/atlas](https://www.mongodb.com/atlas)
+2. Create a free **M0** cluster
+3. Database Access → add user + password
+4. Network Access → allow `0.0.0.0/0` (for Render)
+5. Connect → copy connection string, e.g.  
+   `mongodb+srv://USER:PASSWORD@cluster.mongodb.net/teamtaskmanager`
+
+### 2) Render (free)
+
+1. Sign in at [render.com](https://render.com) with GitHub
+2. **New** → **Blueprint** → connect repo `Aminkhan78/Task-Manager`
+3. When prompted for `SPRING_DATA_MONGODB_URI`, paste your Atlas URI
+4. Deploy — Render creates:
+   - `task-manager-api` (Spring Boot Docker)
+   - `task-manager-web` (static React site)
+
+### 3) Live URLs
+
+After deploy (about 5–10 minutes):
+
+- **Frontend:** `https://task-manager-web.onrender.com` (name may vary in dashboard)
+- **Backend:** `https://task-manager-api.onrender.com`
+
+Test backend: `https://task-manager-api.onrender.com/api/health` → `{"status":"ok"}`
+
+> Free Render services sleep after inactivity; first load may take ~30 seconds.
+
+---
 
 ## API Endpoints
 
@@ -64,29 +140,9 @@ Frontend runs on `http://localhost:5173`, backend on `http://localhost:8080`.
 - `PATCH /api/tasks/{taskId}/status`
 - `GET /api/tasks/dashboard`
 
-## Railway Deployment
-
-Deploy backend and frontend as separate Railway services from this same repo.
-
-### Backend service
-
-- Root directory: `backend`
-- Build: Dockerfile
-- Required variables:
-  - `SPRING_DATA_MONGODB_URI`
-  - `APP_JWT_SECRET`
-  - `APP_JWT_EXPIRATION_MS` (optional)
-
-### Frontend service
-
-- Root directory: `frontend`
-- Build: Dockerfile
-- Required variable:
-  - `VITE_API_URL` = backend public URL
-
 ## Assignment Submission Checklist
 
-- [ ] Live URL (frontend)
+- [ ] Live URL (frontend on Render)
 - [ ] GitHub repository URL
 - [ ] Updated README
 - [ ] 2-5 minute demo video
