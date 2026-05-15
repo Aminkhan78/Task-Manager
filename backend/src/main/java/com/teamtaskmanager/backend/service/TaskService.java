@@ -5,6 +5,7 @@ import com.teamtaskmanager.backend.exception.ResourceNotFoundException;
 import com.teamtaskmanager.backend.model.Project;
 import com.teamtaskmanager.backend.model.Role;
 import com.teamtaskmanager.backend.model.Task;
+import com.teamtaskmanager.backend.model.User;
 import com.teamtaskmanager.backend.repository.TaskRepository;
 import com.teamtaskmanager.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -26,22 +27,23 @@ public class TaskService {
         Task task = new Task();
         task.setTitle(request.getTitle());
         task.setDescription(request.getDescription());
-        task.setProject(project);
+        task.setProjectId(project.getId());
         task.setDueDate(request.getDueDate());
         task.setStatus(request.getStatus());
 
-        if (request.getAssigneeId() != null) {
-            task.setAssignee(userRepository.findById(request.getAssigneeId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Assignee not found")));
+        if (request.getAssigneeId() != null && !request.getAssigneeId().isBlank()) {
+            userRepository.findById(request.getAssigneeId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Assignee not found"));
+            task.setAssigneeId(request.getAssigneeId());
         }
         return toResponse(taskRepository.save(task));
     }
 
-    public List<TaskDtos.TaskResponse> listByProject(Long projectId) {
+    public List<TaskDtos.TaskResponse> listByProject(String projectId) {
         return taskRepository.findByProjectId(projectId).stream().map(this::toResponse).toList();
     }
 
-    public TaskDtos.TaskResponse updateStatus(Long taskId, TaskDtos.UpdateTaskStatusRequest request) {
+    public TaskDtos.TaskResponse updateStatus(String taskId, TaskDtos.UpdateTaskStatusRequest request) {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new ResourceNotFoundException("Task not found"));
         task.setStatus(request.getStatus());
@@ -49,7 +51,7 @@ public class TaskService {
     }
 
     public TaskDtos.DashboardResponse dashboard() {
-        var current = userContextService.getCurrentUser();
+        User current = userContextService.getCurrentUser();
         List<Task> tasks = current.getRole() == Role.ADMIN
                 ? taskRepository.findAll()
                 : taskRepository.findByAssigneeId(current.getId());
@@ -66,17 +68,20 @@ public class TaskService {
     }
 
     private TaskDtos.TaskResponse toResponse(Task task) {
+        Project project = projectService.getProjectById(task.getProjectId());
         TaskDtos.TaskResponse response = new TaskDtos.TaskResponse();
         response.setId(task.getId());
         response.setTitle(task.getTitle());
         response.setDescription(task.getDescription());
         response.setStatus(task.getStatus());
         response.setDueDate(task.getDueDate());
-        response.setProjectId(task.getProject().getId());
-        response.setProjectName(task.getProject().getName());
-        if (task.getAssignee() != null) {
-            response.setAssigneeId(task.getAssignee().getId());
-            response.setAssigneeName(task.getAssignee().getFullName());
+        response.setProjectId(task.getProjectId());
+        response.setProjectName(project.getName());
+        if (task.getAssigneeId() != null) {
+            userRepository.findById(task.getAssigneeId()).ifPresent(assignee -> {
+                response.setAssigneeId(assignee.getId());
+                response.setAssigneeName(assignee.getFullName());
+            });
         }
         return response;
     }

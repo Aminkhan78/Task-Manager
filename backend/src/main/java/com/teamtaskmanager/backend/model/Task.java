@@ -1,34 +1,28 @@
 package com.teamtaskmanager.backend.model;
 
-import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDate;
 
-@Entity
-@Table(name = "tasks")
+@Document(collection = "tasks")
 @Getter
 @Setter
 public class Task {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
-    @Column(nullable = false)
     private String title;
 
     private String description;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private TaskStatus status = TaskStatus.TODO;
 
     private LocalDate dueDate;
 
-    @ManyToOne(optional = false)
-    private Project project;
+    private String projectId;
 
-    @ManyToOne
-    private User assignee;
+    private String assigneeId;
 }

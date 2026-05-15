@@ -22,12 +22,12 @@ public class TaskController {
     }
 
     @GetMapping("/project/{projectId}")
-    public List<TaskDtos.TaskResponse> byProject(@PathVariable Long projectId) {
+    public List<TaskDtos.TaskResponse> byProject(@PathVariable String projectId) {
         return taskService.listByProject(projectId);
     }
 
     @PatchMapping("/{taskId}/status")
-    public TaskDtos.TaskResponse updateStatus(@PathVariable Long taskId,
+    public TaskDtos.TaskResponse updateStatus(@PathVariable String taskId,
                                               @Valid @RequestBody TaskDtos.UpdateTaskStatusRequest request) {
         return taskService.updateStatus(taskId, request);
     }

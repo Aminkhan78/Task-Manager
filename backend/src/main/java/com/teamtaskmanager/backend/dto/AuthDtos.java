@@ -30,7 +30,7 @@ public class AuthDtos {
     @Data
     public static class AuthResponse {
         private final String token;
-        private final Long userId;
+        private final String userId;
         private final String fullName;
         private final String email;
         private final Role role;

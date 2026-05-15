@@ -91,8 +91,7 @@ function App() {
     const memberIds = projectForm.memberIds
       .split(",")
       .map((v) => v.trim())
-      .filter(Boolean)
-      .map(Number);
+      .filter(Boolean);
     try {
       await apiRequest("/api/projects", {
         method: "POST",
@@ -114,8 +113,8 @@ function App() {
         headers: authHeader,
         body: {
           ...taskForm,
-          projectId: Number(taskForm.projectId),
-          assigneeId: taskForm.assigneeId ? Number(taskForm.assigneeId) : null,
+          projectId: taskForm.projectId,
+          assigneeId: taskForm.assigneeId || null,
         },
       });
       setTaskForm(emptyTask);

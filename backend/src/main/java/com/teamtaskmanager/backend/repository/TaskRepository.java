@@ -1,11 +1,11 @@
 package com.teamtaskmanager.backend.repository;
 
 import com.teamtaskmanager.backend.model.Task;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.List;
 
-public interface TaskRepository extends JpaRepository<Task, Long> {
-    List<Task> findByProjectId(Long projectId);
-    List<Task> findByAssigneeId(Long assigneeId);
+public interface TaskRepository extends MongoRepository<Task, String> {
+    List<Task> findByProjectId(String projectId);
+    List<Task> findByAssigneeId(String assigneeId);
 }

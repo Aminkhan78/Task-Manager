@@ -4,8 +4,8 @@ A modern full-stack Team Task Manager built for company selection assignment.
 
 ## Stack
 
-- Backend: Java 17, Spring Boot, Spring Security (JWT), Spring Data JPA
-- Database: PostgreSQL
+- Backend: Java 17, Spring Boot, Spring Security (JWT), Spring Data MongoDB
+- Database: MongoDB
 - Frontend: React (Vite), HTML/CSS/JS
 - APIs: REST API with validation, relationships, and RBAC
 
@@ -20,7 +20,15 @@ A modern full-stack Team Task Manager built for company selection assignment.
 
 ## Local Setup
 
-### 1) Backend
+### 1) MongoDB
+
+Run MongoDB locally (default connection: `mongodb://localhost:27017/teamtaskmanager`):
+
+```bash
+docker run -d --name ttm-mongo -p 27017:27017 mongo:7
+```
+
+### 2) Backend
 
 ```bash
 cd backend
@@ -29,13 +37,11 @@ mvn spring-boot:run
 
 Set env vars (optional if using defaults):
 
-- `SPRING_DATASOURCE_URL`
-- `SPRING_DATASOURCE_USERNAME`
-- `SPRING_DATASOURCE_PASSWORD`
+- `SPRING_DATA_MONGODB_URI`
 - `APP_JWT_SECRET` (must be a long secure key in production)
 - `APP_JWT_EXPIRATION_MS`
 
-### 2) Frontend
+### 3) Frontend
 
 ```bash
 cd frontend
@@ -67,9 +73,7 @@ Deploy backend and frontend as separate Railway services from this same repo.
 - Root directory: `backend`
 - Build: Dockerfile
 - Required variables:
-  - `SPRING_DATASOURCE_URL`
-  - `SPRING_DATASOURCE_USERNAME`
-  - `SPRING_DATASOURCE_PASSWORD`
+  - `SPRING_DATA_MONGODB_URI`
   - `APP_JWT_SECRET`
   - `APP_JWT_EXPIRATION_MS` (optional)
 
