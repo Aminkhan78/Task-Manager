@@ -4,7 +4,6 @@ services:
     runtime: docker
     rootDir: backend
     dockerfilePath: Dockerfile
-    plan: free
     healthCheckPath: /api/health
     envVars:
       - key: SPRING_DATA_MONGODB_URI
@@ -20,7 +19,6 @@ services:
     rootDir: frontend
     buildCommand: npm install && npm run build
     staticPublishPath: dist
-    plan: free
     envVars:
       - key: VITE_API_URL
         fromService:
